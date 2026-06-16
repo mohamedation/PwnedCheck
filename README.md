@@ -1,6 +1,15 @@
+<div align="center">
+
 # PwnedCheck
 
-PwnedCheck is a command-line tool for checking whether passwords have appeared in known data breaches using the [Have I Been Pwned](https://haveibeenpwned.com/) API and supports encrypted Bitwarden vaults exports.
+**PwnedCheck is a command-line tool for checking whether passwords have appeared in known data breaches using the [Have I Been Pwned](https://haveibeenpwned.com/) API and supports encrypted Bitwarden vaults exports.**
+
+
+[![Go Version](https://img.shields.io/badge/go-1.25-00ADD8?logo=go)](https://go.dev)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mohamedation/PwnedCheck)](https://goreportcard.com/report/github.com/mohamedation/PwnedCheck)
+
+</div>
 
 <p align="center">
   <img src="assets/showcase-bitwarden.gif" alt="PwnedCheck Bitwarden Decryption Demo" width="750">
@@ -140,14 +149,14 @@ pwnedcheck -v password123
 
 ## Options
 
-- `-i string`: Input file containing passwords or a JSON export, default `passwords.txt`
-- `-bw`: Treat the input file as a Bitwarden password-protected encrypted JSON export
-- `-hashed`: Treat input as pre-computed SHA-1 hashes instead of plaintext
-- `-hide`: Hide plaintext passwords from console output
-- `-stats`: Show runtime and result summary after completion
-- `-v`: Print each HIBP request and response status
-- `-h`: Show help
-- `-c`: Show credits
+- `-i, --input <string>` : Input file containing passwords or JSON export (default `"passwords.txt"`)
+- `-bw, --bitwarden`     : Treat input file as a Bitwarden password-protected encrypted JSON export
+- `-H, --hashed`         : Treat input as pre-computed SHA-1 hashes instead of plaintext
+- `-x, --hide`           : Hide plaintext passwords from console output
+- `-s, --stats`          : Show runtime and result summary after completion
+- `-v, --verbose`        : Print each HIBP request and response status to show API diagnostics
+- `-c, --credits`        : Show credits
+- `-h, --help`           : Show help
 
 ## Security Model
 
