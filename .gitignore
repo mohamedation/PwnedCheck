@@ -4,7 +4,7 @@
 *.dll
 *.so
 *.dylib
-pwnedcheck
+/pwnedcheck
 
 # Test binary, built with `go test -c`
 *.test
@@ -27,7 +27,6 @@ go.work.sum
 
 # protected vault export
 *.json
-
 
 # vhs tape files
 *.tape
