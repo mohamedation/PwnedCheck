@@ -6,6 +6,9 @@ before:
     - go mod tidy
 
 builds:
+  - id: pwnedcheck
+    binary: pwnedcheck
+    main: ./cmd/pwnedcheck
   - env:
       - CGO_ENABLED=0
     goos:
