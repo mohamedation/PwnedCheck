@@ -6,6 +6,9 @@
 
 
 [![Go Version](https://img.shields.io/badge/go-1.25-00ADD8?logo=go)](https://go.dev)
+[![Go Reference](https://pkg.go.dev/badge/github.com/mohamedation/PwnedCheck.svg)](https://pkg.go.dev/github.com/mohamedation/PwnedCheck)
+[![Test](https://github.com/mohamedation/PwnedCheck/actions/workflows/test.yml/badge.svg)](https://github.com/mohamedation/PwnedCheck/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/mohamedation/PwnedCheck/branch/main/graph/badge.svg)](https://codecov.io/gh/mohamedation/PwnedCheck)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mohamedation/PwnedCheck)](https://goreportcard.com/report/github.com/mohamedation/PwnedCheck)
 
@@ -185,6 +188,15 @@ Good passwords: 1
 - `internal/checker`: run loop and output formatting
 - `internal/hibp`: HIBP client and password hashing
 - `internal/bitwarden`: Bitwarden export decryption
+
+## Development
+
+```bash
+make test    # run unit tests
+make cover   # run tests with coverage summary
+```
+
+Docs: [pkg.go.dev](https://pkg.go.dev/github.com/mohamedation/PwnedCheck) · Coverage: [Codecov](https://codecov.io/gh/mohamedation/PwnedCheck)
 
 ## License
 

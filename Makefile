@@ -13,7 +13,7 @@ endif
 
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 
-.PHONY: help tidy test run build install clean build-linux build-macos install-linux install-macos
+.PHONY: help tidy test cover run build install clean build-linux build-macos install-linux install-macos
 
 help:
 	@echo "Targets:"
@@ -25,6 +25,7 @@ help:
 	@echo "  make install-macos  Build a macOS binary in $(DIST_DIR)/ and copy it to $(GOBIN)/$(APP_NAME)"
 	@echo "  make run            Run the CLI from source"
 	@echo "  make test           Run go test ./..."
+	@echo "  make cover          Run tests with coverage summary"
 	@echo "  make tidy           Run go mod tidy"
 	@echo "  make clean          Remove build artifacts"
 
@@ -33,6 +34,11 @@ tidy:
 
 test:
 	$(GO) test ./...
+
+cover:
+	$(GO) test ./... -coverprofile=coverage.out -covermode=atomic
+	$(GO) tool cover -func=coverage.out
+	@echo "HTML report: $(GO) tool cover -html=coverage.out"
 
 run:
 	$(GO) run $(MAIN_PKG) $(ARGS)

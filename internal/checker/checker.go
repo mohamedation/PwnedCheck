@@ -19,6 +19,7 @@ const (
 	colorReset  = "\033[0m"
 )
 
+// Config holds runtime options for a PwnedCheck run.
 type Config struct {
 	InputFile    string
 	IsHashed     bool
@@ -28,6 +29,15 @@ type Config struct {
 	Verbose      bool
 	Args         []string
 }
+
+// passwordChecker is the HIBP API surface used by the checker.
+type passwordChecker interface {
+	CheckPassword(password string, alreadyHashed bool) (bool, error)
+	Wait()
+}
+
+type vaultExtractor func(filePath, exportPassword string) ([]bitwarden.VaultEntry, error)
+type passwordReader func() (string, error)
 
 type statistics struct {
 	startTime     time.Time
@@ -43,8 +53,12 @@ func (s *statistics) printSummary() {
 	fmt.Printf("%sGood passwords: %d%s\n", colorGreen, s.goodPasswords, colorReset)
 }
 
+// Run checks passwords according to cfg and returns a process exit code.
 func Run(cfg Config) int {
-	client := hibp.NewClient(cfg.Verbose)
+	return run(cfg, hibp.NewClient(cfg.Verbose), defaultReadPassword, bitwarden.ExtractEntries)
+}
+
+func run(cfg Config, client passwordChecker, readPassword passwordReader, extract vaultExtractor) int {
 	stats := &statistics{startTime: time.Now()}
 
 	if len(cfg.Args) > 0 {
@@ -52,13 +66,23 @@ func Run(cfg Config) int {
 	}
 
 	if cfg.Bitwarden {
-		return runBitwarden(client, cfg, stats)
+		return runBitwarden(client, cfg, stats, readPassword, extract)
 	}
 
 	return runFile(client, cfg, stats)
 }
 
-func runInline(client *hibp.Client, cfg Config, stats *statistics) int {
+func defaultReadPassword() (string, error) {
+	fmt.Print("Enter Bitwarden Export Encryption Password: ")
+	passwordBytes, err := term.ReadPassword(int(os.Stdin.Fd()))
+	fmt.Println()
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(string(passwordBytes)), nil
+}
+
+func runInline(client passwordChecker, cfg Config, stats *statistics) int {
 	total := len(cfg.Args)
 	for i, password := range cfg.Args {
 		fmt.Printf("\nChecking password %d of %d...\n", i+1, total)
@@ -89,18 +113,15 @@ func runInline(client *hibp.Client, cfg Config, stats *statistics) int {
 	return 0
 }
 
-func runBitwarden(client *hibp.Client, cfg Config, stats *statistics) int {
-	fmt.Print("Enter Bitwarden Export Encryption Password: ")
-	passwordBytes, err := term.ReadPassword(int(os.Stdin.Fd()))
-	fmt.Println()
+func runBitwarden(client passwordChecker, cfg Config, stats *statistics, readPassword passwordReader, extract vaultExtractor) int {
+	vaultPassword, err := readPassword()
 	if err != nil {
 		fmt.Printf("%sFailed to read password: %v%s\n", colorRed, err, colorReset)
 		return 1
 	}
-	vaultPassword := strings.TrimSpace(string(passwordBytes))
 
 	fmt.Println("Decrypting vault file in-memory...")
-	entries, err := bitwarden.ExtractEntries(cfg.InputFile, vaultPassword)
+	entries, err := extract(cfg.InputFile, vaultPassword)
 	if err != nil {
 		fmt.Printf("%sBitwarden decryption error: %v%s\n", colorRed, err, colorReset)
 		return 1
@@ -125,7 +146,6 @@ func runBitwarden(client *hibp.Client, cfg Config, stats *statistics) int {
 		}
 
 		if found {
-			// fmt.Printf("%sBAD PASSWORD — BREACH DETECTED%s\n", colorRed, colorReset)
 			fmt.Printf("\r\033[K%sBAD PASSWORD — BREACH DETECTED%s\n", colorRed, colorReset)
 			fmt.Printf("  Account:  %s\n", entry.AccountName)
 			if entry.Username != "" {
@@ -150,7 +170,7 @@ func runBitwarden(client *hibp.Client, cfg Config, stats *statistics) int {
 	return 0
 }
 
-func runFile(client *hibp.Client, cfg Config, stats *statistics) int {
+func runFile(client passwordChecker, cfg Config, stats *statistics) int {
 	file, err := os.Open(cfg.InputFile)
 	if err != nil {
 		if os.IsNotExist(err) && cfg.InputFile == "passwords.txt" {
