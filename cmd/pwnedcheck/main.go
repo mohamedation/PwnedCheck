@@ -16,7 +16,7 @@ import (
 	"github.com/mohamedation/PwnedCheck/internal/checker"
 )
 
-const version = "1.0.0"
+const version = "1.0.1"
 
 func main() {
 	os.Exit(run(os.Args[1:], os.Stdout, os.Stderr))
