@@ -10,7 +10,6 @@
 [![Test](https://github.com/mohamedation/PwnedCheck/actions/workflows/test.yml/badge.svg)](https://github.com/mohamedation/PwnedCheck/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/mohamedation/PwnedCheck/branch/main/graph/badge.svg)](https://codecov.io/gh/mohamedation/PwnedCheck)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-[![Go Report Card](https://goreportcard.com/badge/github.com/mohamedation/PwnedCheck)](https://goreportcard.com/report/github.com/mohamedation/PwnedCheck)
 
 </div>
 
